@@ -143,6 +143,8 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
+  // 先画个真值表，之后德摩根定律化简一下
+  // 就直接7操作数了
   return (~(~x&~y))&(~(x&y));
 }
 /* 
@@ -182,6 +184,7 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
+  // 一目了然
   int y = 0xAA + (0xAA << 8) + (0xAA << 16) + (0xAA << 24);
   return !((y&x)^y);
 }
@@ -224,7 +227,12 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+  // 首先判断是否为0
+  int judge1 = !!x;
+  // 天才的想法把1转换为11111....
+  // 0就转换为0 最后与完或一下就行了
+  int judge2 = (((~judge1)+1)&y) | ((~((~judge1)+1))&z);
+  return judge2;
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -234,7 +242,10 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  int xx = x >> 31;
+  int yy = y >> 31;
+  // 判断异号的情况，在同号的情况下做减法(y + (~x) + 1)判断是否溢出
+  return ((xx & (!yy)) | (!((y + (~x) + 1) >> 31))) & !((!xx) & yy);
 }
 //4
 /* 
@@ -246,7 +257,12 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+  // 取最后一位的一，格式为0000100000，仅包含一个1
+  int judge1 = (x & ((~x) + 1));
+  // 取反+1，如果为0，+1后会溢出，则最高位为0，如果不为0，最高位为1
+  // 将结果+1后&1即可得出答案
+  int judge2 = ((((~judge1) + 1) >> 31) + 1) & 1;
+  return judge2;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -254,14 +270,79 @@ int logicalNeg(int x) {
  *            howManyBits(298) = 10
  *            howManyBits(-5) = 4
  *            howManyBits(0)  = 1
- *            howManyBits(-1) = 1
+ *            howManyBits(-1) = 1 
  *            howManyBits(0x80000000) = 32
  *  Legal ops: ! ~ & ^ | + << >>
  *  Max ops: 90
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+//   // 首先判断是否是负数
+//   int judge1 = ((x >> 31) & 1);
+//   // 负数的话取反+1
+//   int _x = (~x)+1;
+//   // 如果负数取反+1，如果不是负数则不用
+//   int true_x = (((~judge1)+1)&_x) | ((~((~judge1)+1))&x);
+//   // 判断最高位的1是第几个
+//   int top = 1 << 31;
+//   int add_31 = !!(top & true_x);
+//   int add_30 = !!((top>>1) & true_x) + add_31;
+//   int add_29 = !!((top>>2) & true_x) + add_30;
+//   int add_28 = !!((top>>3) & true_x) + add_29;
+//   int add_27 = !!((top>>4) & true_x) + add_28;
+//   int add_26 = !!((top>>5) & true_x) + add_27;
+//   int add_25 = !!((top>>6) & true_x) + add_26;
+//   int add_24 = !!((top>>7) & true_x) + add_25;
+//   int add_23 = !!((top>>8) & true_x) + add_24;
+//   int add_22 = !!((top>>9) & true_x) + add_23;
+//   int add_21 = !!((top>>10) & true_x) + add_22;
+//   int add_20 = !!((top>>11) & true_x) + add_21;
+//   int add_19 = !!((top>>12) & true_x) + add_20;
+//   int add_18 = !!((top>>13) & true_x) + add_19;
+//   int add_17 = !!((top>>14) & true_x) + add_18;
+//   int add_16 = !!((top>>15) & true_x) + add_17;
+//   int add_15 = !!((top>>16) & true_x) + add_16;
+//   int add_14 = !!((top>>17) & true_x) + add_15;
+//   int add_13 = !!((top>>18) & true_x) + add_14;
+//   int add_12 = !!((top>>19) & true_x) + add_13;
+//   int add_11 = !!((top>>20) & true_x) + add_12;
+//   int add_10 = !!((top>>21) & true_x) + add_11;
+//   int add_9 = !!((top>>22) & true_x) + add_10;
+//   int add_8 = !!((top>>23) & true_x) + add_9;
+//   int add_7 = !!((top>>24) & true_x) + add_8;
+//   int add_6 = !!((top>>25) & true_x) + add_7;
+//   int add_5 = !!((top>>26) & true_x) + add_6;
+//   int add_4 = !!((top>>27) & true_x) + add_5;
+//   int add_3 = !!((top>>28) & true_x) + add_4;
+//   int add_2 = !!((top>>29) & true_x) + add_3;
+//   int add_1 = !!((top>>30) & true_x) + add_2;
+//   int add_0 = !!((top>>31) & true_x) + add_1;
+//   int judge2 = judge1 & (!(true_x & (true_x + (~0))));
+//   return add_0 + 1 + ((~judge2) + 1);
+// 180
+  // 上面这种做法操作数为180，但是能过，
+  // 下面是优化写法
+  int is_neg = (x >> 31);
+  // 一个神奇的写法，我之前一直默认是直接取一个最高位的0或者1，但其实为算数右移
+  // 想到 is_neg 是算数右移后，这种判断写法很简单了
+  // 如果x是负数则不需要对～x进行+1，比如特例-2^n这种类型的数字
+  // 如果+1了还需要在最后进行特判一下, 不加就不用特判
+  int pos_x = ((~is_neg) & x) | (is_neg & (~x));
+
+  int b16,b8,b4,b2,b1,b0;
+  // 下面介绍的是神奇二分写法
+  b16 = (!!(pos_x >> 16)) << 4;
+  pos_x = pos_x >> b16;
+  b8 = (!!(pos_x >> 8)) << 3;
+  pos_x = pos_x >> b8;
+  b4 = (!!(pos_x >> 4)) << 2;
+  pos_x = pos_x >> b4;
+  b2 = (!!(pos_x >> 2)) << 1;
+  pos_x = pos_x >> b2;
+  b1 = (!!(pos_x >> 1));
+  pos_x = pos_x >> b1;
+  b0 = pos_x;
+  return b16 + b8 + b4 + b2 + b1 + b0 + 1;
 }
 //float
 /* 
@@ -276,7 +357,21 @@ int howManyBits(int x) {
  *   Rating: 4
  */
 unsigned floatScale2(unsigned uf) {
-  return 2;
+  unsigned s = (uf >> 31) & 1;
+  unsigned exp = (uf >> 23) & (0xff);
+  unsigned frac = (s << 31) ^ (exp << 23) ^ uf;
+  // 当NaN时返回NaN
+  if(exp == 0xff){
+    return uf;
+  }
+  // 如果是规格数，则阶码直接+1，如果是非规格数则尾数相加
+  if(exp != 0){
+    exp = exp + 1;
+  }else {
+    frac = frac + frac;
+  }
+  // 这里就算 非规格化尾数相加，尾数溢出也会加到阶码上
+  return (s<<31) + (exp<<23) + frac;
 }
 /* 
  * floatFloat2Int - Return bit-level equivalent of expression (int) f
@@ -290,8 +385,31 @@ unsigned floatScale2(unsigned uf) {
  *   Max ops: 30
  *   Rating: 4
  */
+// 1/2 0 01111110 000000
 int floatFloat2Int(unsigned uf) {
-  return 2;
+  unsigned s = (uf >> 31) & 1;
+  unsigned exp = (uf >> 23) & (0xff);
+  unsigned frac = (s << 31) ^ (exp << 23) ^ uf;
+  if(exp < 127) {
+    return 0;
+  }
+  if(exp > 158 || (exp == 158 && (!!frac))) {
+    return 0x80000000u;
+  }
+  // 将默认的1加上
+  frac = frac | (1 << 23);
+  // 如果大于23位左移
+  if(exp - 127 >= 23){
+    frac = frac << (exp - 127 - 23);
+  } else {
+    // 小于则右移
+    frac = frac >> (127 + 23 - exp);
+  }
+  // 如果是负数则取反
+  if(s == 1){
+    frac = (~frac) + 1;
+  }
+  return frac;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -307,5 +425,12 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 2;
+  if(x < -126) {
+    return 0;
+  }
+  if(x > 127) {
+    return 0xff<<23;
+  }
+  x = x + 127;
+  return (x << 23);
 }
