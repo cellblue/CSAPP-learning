@@ -356,7 +356,17 @@ unsigned floatScale2(unsigned uf) {
  *   Rating: 4
  */
 int floatFloat2Int(unsigned uf) {
-  return 0;
+  unsigned jie,wei,s,ans;
+  int os;
+  s=uf>>31;
+  jie=uf<<1>>24;
+  wei=uf<<9>>9;
+  os=jie-127;
+  if(os<0) return 0;
+  if(os>31) return 0x80000000u;
+  ans=1<<os;
+  if(s) return (~ans)+1;
+  return ans;
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
@@ -372,5 +382,9 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    return 0;
+    int jie,ans=0,rjie=x+127;
+    jie=rjie;
+    if(rjie>=255) jie=255;
+    if(rjie<=0) jie=0; 
+    return ans|(jie<<23);
 }
