@@ -360,11 +360,12 @@ int floatFloat2Int(unsigned uf) {
   int os;
   s=uf>>31;
   jie=uf<<1>>24;
-  wei=uf<<9>>9;
-  os=jie-127;
-  if(os<0) return 0;
-  if(os>31) return 0x80000000u;
-  ans=1<<os;
+  wei=uf<<9>>9|(1<<23);
+  os=jie-150;
+  if(os<-23) return 0;
+  if(os>8) return 0x80000000u;
+  if(os>0) ans=wei<<os;
+  else ans=wei>>(-os);
   if(s) return (~ans)+1;
   return ans;
 }
@@ -382,9 +383,9 @@ int floatFloat2Int(unsigned uf) {
  *   Rating: 4
  */
 unsigned floatPower2(int x) {
-    int jie,ans=0,rjie=x+127;
+    int jie,rjie=x+127;
     jie=rjie;
     if(rjie>=255) jie=255;
     if(rjie<=0) jie=0; 
-    return ans|(jie<<23);
+    return jie<<23;
 }
