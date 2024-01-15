@@ -347,7 +347,7 @@ Disassembly of section .text:
   400ee0:	48 83 ec 08          	sub    $0x8,%rsp
   400ee4:	be 00 24 40 00       	mov    $0x402400,%esi
   400ee9:	e8 4a 04 00 00       	callq  401338 <strings_not_equal>
-  400eee:	85 c0                	test   %eax,%eax
+  400eee:	85 c0                	test   %eax,%eax                  
   400ef0:	74 05                	je     400ef7 <phase_1+0x17>
   400ef2:	e8 43 05 00 00       	callq  40143a <explode_bomb>
   400ef7:	48 83 c4 08          	add    $0x8,%rsp
@@ -558,7 +558,7 @@ Disassembly of section .text:
   40116f:	be 00 00 00 00       	mov    $0x0,%esi
   401174:	eb 21                	jmp    401197 <phase_6+0xa3>
   401176:	48 8b 52 08          	mov    0x8(%rdx),%rdx
-  40117a:	83 c0 01             	add    $0x1,%eax
+  40117a:	83 c0 01             	add    $0x1,%eax              
   40117d:	39 c8                	cmp    %ecx,%eax
   40117f:	75 f5                	jne    401176 <phase_6+0x82>
   401181:	eb 05                	jmp    401188 <phase_6+0x94>
