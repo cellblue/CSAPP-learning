@@ -1,0 +1,44 @@
+.pos 0
+    irmovq stack, %rsp
+    call main
+    halt
+
+.align 8
+    ele1:
+        .quad 0x00a
+        .quad ele2
+    ele2:
+        .quad 0x0b0
+        .quad ele3
+    ele3:
+        .quad 0xc00
+        .quad 0
+
+main: 
+    irmovq ele1,%rdi
+    call rsum_list
+    ret
+
+
+# long rsum_list(list_ptr list)
+# list in %rdi
+rsum_list:
+    andq %rdi, %rdi
+    je end1
+    irmovq $8,%r8
+    mrmovq (%rdi),%rdx      # 取出ele_n的值
+    addq %r8, %rdi          # 下移
+    mrmovq (%rdi),%rdi      # 取next
+    pushq %rdx
+    call rsum_list          # 递归
+    popq %rdx
+    addq %rdx, %rax         # sum += ele_n
+    jmp end2    
+end1: 
+    xorq %rax, %rax
+end2:
+    ret
+# 这个也挺关键的，不能设置为200，会溢出
+# 时不时就溢出一下
+.pos 300
+stack:

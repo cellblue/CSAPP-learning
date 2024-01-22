@@ -1,0 +1,38 @@
+.pos 0
+    irmovq stack, %rsp
+    call main
+    halt
+
+.align 8
+    ele1:
+        .quad 0x00a
+        .quad ele2
+    ele2:
+        .quad 0x0b0
+        .quad ele3
+    ele3:
+        .quad 0xc00
+        .quad 0
+
+main: 
+    irmovq ele1,%rdi
+    call sum_list
+    ret
+
+
+# long sum_list(list_ptr list)
+# list in %rdi
+sum_list:
+    irmovq $8,%r8
+    xorq %rax, %rax    # 初始化sum
+loop:
+    mrmovq (%rdi),%r10  # 取出ele_n的值
+    addq %r10,%rax      # sum += ele_n->value
+    addq %r8,%rdi       # 指针下移
+    mrmovq (%rdi),%rdi   # 取next
+    andq %rdi,%rdi      # 判断是否为NULL
+    jne loop
+    ret
+# 设置栈的起始位置
+.pos 200
+stack:
