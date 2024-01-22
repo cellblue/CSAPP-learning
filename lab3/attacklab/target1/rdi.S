@@ -1,3 +1,9 @@
-movq $0x6044e4,%rdi
-pushq $0x4018fa
+popq %rax
+mov %eax,%edx
+mov %edx,%ecx
+mov %ecx,%esi
+mov %rsp,%rax
+mov %rax,%rdi
+lea (%rdi,%rsi,1),%rax
+mov %rax,%rdi
 ret
