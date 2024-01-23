@@ -1,0 +1,49 @@
+.pos 0
+    irmovq stack, %rsp
+    call main
+    halt
+
+.align 8
+# Source block
+    src:
+        .quad 0x00a
+        .quad 0x0b0
+        .quad 0xc00
+# Destination block
+    dest:
+        .quad 0x111
+        .quad 0x222
+        .quad 0x333
+
+main: 
+    irmovq src, %rdi
+    irmovq dest,%rsi
+    irmovq $3,%rdx
+    call copy_block
+    ret
+
+
+# long copy_block(long* src, long* dst, long len)
+# list in %rdi
+copy_block:
+    irmovq $8,%r8
+    irmovq $1,%r9
+    xorq %rax, %rax    # 初始化res
+    andq %rdx,%rdx
+    je end
+loop:
+    mrmovq (%rdi),%r10  # 取出*src的值
+    xorq %r10,%rax      # res = res ^ value
+    rmmovq %r10,(%rsi)   # 给*dst 赋值
+    addq %r8,%rdi       # src++
+    addq %r8,%rsi       # dst++
+    subq %r9,%rdx
+    jne loop
+end:
+    ret
+
+
+
+# 设置栈的起始位置
+.pos 400
+stack:

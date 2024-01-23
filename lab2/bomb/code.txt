@@ -441,7 +441,7 @@ Disassembly of section .text:
   400ff9:	7d 0c                	jge    401007 <func4+0x39>  # 结束
   400ffb:	8d 71 01             	lea    0x1(%rcx),%esi       # 7 < x_1 那就+1，第二个参数
   400ffe:	e8 cb ff ff ff       	callq  400fce <func4>       
-  401003:	8d 44 00 01          	lea    0x1(%rax,%rax,1),%eax# 
+  401003:	8d 44 00 01          	lea    0x1(%rax,%rax,1),%eax  # 
   401007:	48 83 c4 08          	add    $0x8,%rsp
   40100b:	c3                   	retq   
 

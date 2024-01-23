@@ -17,7 +17,7 @@
 #define MAXBUF 1024
 
 #ifdef HAS_GUI
-#include <tk.h>
+#include <tk8.6/tk.h>
 #endif /* HAS_GUI */
 
 #define MAXARGS 128
