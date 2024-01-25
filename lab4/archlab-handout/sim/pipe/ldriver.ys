@@ -29,23 +29,160 @@ ncopy:
 ##################################################################
 # You can modify this portion
 	# Loop header
-	xorq %rax,%rax		# count = 0;
-	andq %rdx,%rdx		# len <= 0?
-	jle Done		# if so, goto Done:
+	jmp End1			# if so, goto Done:
+Loop0: 
+	mrmovq (%rdi), %r8
+	mrmovq 8(%rdi), %r9
+	mrmovq 16(%rdi), %r10
+	mrmovq 24(%rdi), %r11
+	mrmovq 32(%rdi), %r12
+	mrmovq 40(%rdi), %rbx
+	mrmovq 48(%rdi), %rbp
+	
+	rmmovq %r8,(%rsi)
+	rmmovq %r9,8(%rsi)
+	rmmovq %r10,16(%rsi)
+	rmmovq %r11,24(%rsi)
+	rmmovq %r12,32(%rsi)
+	rmmovq %rbx,40(%rsi)
+	rmmovq %rbp,48(%rsi)
 
-Loop:	mrmovq (%rdi), %r10	# read val from src...
-	rmmovq %r10, (%rsi)	# ...and store it to dst
-	andq %r10, %r10		# val <= 0?
-	jle Npos		# if so, goto Npos:
-	irmovq $1, %r10
-	addq %r10, %rax		# count++
-Npos:	irmovq $1, %r10
-	subq %r10, %rdx		# len--
-	irmovq $8, %r10
-	addq %r10, %rdi		# src++
-	addq %r10, %rsi		# dst++
-	andq %rdx,%rdx		# len > 0?
-	jg Loop			# if so, goto Loop:
+	andq %r8, %r8
+	jle Loop1   
+	iaddq $1,%rax
+Loop1:
+	andq %r9, %r9
+	jle Loop2
+	iaddq $1,%rax
+Loop2:
+	andq %r10, %r10
+	jle Loop3
+	iaddq $1,%rax
+Loop3:
+	andq %r11, %r11
+	jle Loop4
+	iaddq $1,%rax
+Loop4:
+	andq %r12, %r12
+	jle Loop5
+	iaddq $1,%rax
+Loop5:
+	andq %rbx, %rbx
+	jle Loop6
+	iaddq $1,%rax
+Loop6:
+	andq %rbp, %rbp
+	jle Loop7
+	iaddq $1,%rax
+Loop7:
+	mrmovq 56(%rdi), %r8
+	mrmovq 64(%rdi), %r9
+	mrmovq 72(%rdi), %r10
+
+	rmmovq %r8,56(%rsi)
+	rmmovq %r9,64(%rsi)
+	rmmovq %r10,72(%rsi)
+
+	andq %r8, %r8
+	jle Loop8
+	iaddq $1,%rax
+Loop8:
+	andq %r9, %r9
+	jle Loop9
+	iaddq $1,%rax
+Loop9:
+	iaddq $80, %rsi
+	iaddq $80, %rdi
+	andq %r10, %r10
+	jle End1
+	iaddq $1,%rax
+End1:
+	iaddq $-10, %rdx
+	jge Loop0
+Root:							# [0,1,2,3,4,5,6,7,8,9]
+	iaddq 6, %rdx    			# len - 4
+	jl Left
+	jg Right
+	je P4
+Left:							# [0,1,2,3]
+	iaddq 3, %rdx				# len - 1
+	je P1
+	iaddq -1, %rdx				# len - 2
+	je P2
+	iaddq -1, %rdx
+	je P3
+	ret
+Right:							# [5,6,7,8,9]
+	iaddq -2, %rdx 				# len - 6
+	jl P5
+	je P6
+	iaddq -2, %rdx				# len - 8
+	jl P7
+	je P8
+P9: 
+	mrmovq 64(%rdi), %r8
+	andq %r8, %r8
+	rmmovq %r8, 64(%rsi)
+P8: 
+	mrmovq 56(%rdi), %r8
+	jle P88
+	iaddq $1, %rax
+P88:
+	andq %r8, %r8
+	rmmovq %r8, 56(%rsi)
+P7: 
+	mrmovq 48(%rdi), %r8
+	jle P77
+	iaddq $1, %rax
+P77:
+	andq %r8,%r8
+	rmmovq %r8, 48(%rsi)
+P6: 
+	mrmovq 40(%rdi), %r8
+	jle P66
+	iaddq $1, %rax
+P66:
+	andq %r8, %r8
+	rmmovq %r8, 40(%rsi)
+P5: 
+	mrmovq 32(%rdi), %r8
+	jle P55
+	iaddq $1, %rax
+P55:
+	andq %r8, %r8
+	rmmovq %r8, 32(%rsi)
+P4: 
+	mrmovq 24(%rdi), %r8
+	jle P44
+	iaddq $1, %rax
+P44:	
+	andq %r8, %r8
+	rmmovq %r8, 24(%rsi)
+P3: 
+	mrmovq 16(%rdi), %r8
+	jle P33
+	iaddq $1, %rax
+P33:
+	andq %r8, %r8
+	rmmovq %r8, 16(%rsi)
+P2: 
+	mrmovq 8(%rdi), %r8
+	jle P22
+	iaddq $1, %rax
+P22:
+	andq %r8, %r8
+	rmmovq %r8, 8(%rsi)
+P1: 
+	mrmovq (%rdi), %r8
+	jle P11
+	iaddq $1, %rax
+P11:
+	andq %r8, %r8
+	rmmovq %r8, (%rsi)
+	jle Done
+	iaddq $1, %rax
+
+
 ##################################################################
 # Do not modify the following section of code
 # Function epilogue.
@@ -62,69 +199,69 @@ EndFun:
 ###############################
 	.align 8
 src:
-	.quad -1
-	.quad -2
-	.quad 3
-	.quad 4
-	.quad 5
-	.quad 6
+	.quad 1
+	.quad 2
+	.quad -3
+	.quad -4
+	.quad -5
+	.quad -6
 	.quad 7
-	.quad 8
-	.quad -9
+	.quad -8
+	.quad 9
 	.quad -10
 	.quad -11
 	.quad 12
-	.quad -13
+	.quad 13
 	.quad 14
 	.quad 15
 	.quad -16
 	.quad -17
 	.quad 18
 	.quad -19
-	.quad 20
-	.quad -21
-	.quad -22
-	.quad 23
-	.quad -24
-	.quad -25
+	.quad -20
+	.quad 21
+	.quad 22
+	.quad -23
+	.quad 24
+	.quad 25
 	.quad 26
 	.quad -27
-	.quad 28
+	.quad -28
 	.quad 29
-	.quad -30
+	.quad 30
 	.quad -31
-	.quad -32
-	.quad 33
+	.quad 32
+	.quad -33
 	.quad -34
-	.quad 35
-	.quad -36
+	.quad -35
+	.quad 36
 	.quad -37
-	.quad 38
-	.quad 39
-	.quad 40
-	.quad 41
-	.quad 42
-	.quad -43
-	.quad -44
-	.quad 45
+	.quad -38
+	.quad -39
+	.quad -40
+	.quad -41
+	.quad -42
+	.quad 43
+	.quad 44
+	.quad -45
 	.quad 46
-	.quad 47
+	.quad -47
 	.quad 48
 	.quad -49
-	.quad 50
+	.quad -50
 	.quad -51
 	.quad -52
-	.quad -53
+	.quad 53
 	.quad 54
 	.quad 55
 	.quad -56
 	.quad -57
-	.quad -58
+	.quad 58
 	.quad 59
-	.quad -60
-	.quad -61
+	.quad 60
+	.quad 61
 	.quad 62
-	.quad -63
+	.quad 63
 	.quad 0xbcdefa # This shouldn't get moved
 
 	.align 16
