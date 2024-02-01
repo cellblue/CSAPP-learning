@@ -42,7 +42,7 @@ Loop1:
 	andq %r9, %r9
 	jle Loop2
 	iaddq $1,%rax
-Loop2:
+Loop2:                    
 	andq %r10, %r10
 	jle Loop3
 	iaddq $1,%rax
@@ -88,8 +88,8 @@ End1:
 	iaddq $-10, %rdx
 	jge Loop0
 Root:							# [0,1,2,3,4,5,6,7,8,9]
-	iaddq 6, %rdx    			# len - 4
-	jl Left
+	iaddq 6, %rdx
+	jl Left    			# len - 4
 	jg Right
 	je P4
 Left:							# [0,1,2,3]
@@ -102,10 +102,10 @@ Left:							# [0,1,2,3]
 	ret
 Right:							# [5,6,7,8,9]
 	iaddq -2, %rdx 				# len -5
-	jl P5		# len - 6
+	jl P5						# len - 6
 	je P6
 	iaddq -2, %rdx				# len - 7
-	jl P7		# len - 8
+	jl P7						# len - 8
 	je P8
 P9: 
 	mrmovq 64(%rdi), %r8
